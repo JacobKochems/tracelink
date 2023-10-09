@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+#------------------------------------------------------------------------------
+# Tracelink
+# Copyright (C) 2023  Jacob Kochems
+# SPDX-License-Identifier: GPL-3.0-or-later
+#------------------------------------------------------------------------------
+#
+# Trace symbolic links all the way back to the regular file and
+# print out all intermediate symlinks.
+#
+
+if [[ $# == 0 ]]; then
+    echo "Usage: tracelink SYMLINK_1 [SYMLINK_2 ...]"
+    exit 1
+fi
+
+for symlink in "$@"
+do
+    next="$symlink"
+    # print currently processed symlink to stderr
+    >&2 echo "---( Symlink: $next )---"
+    # iterate from link to link until the chain ends at a regular file
+    while lnk=$(readlink $next); do
+        if [[ $lnk == /* ]]; then
+            # case: absolute path
+            next=$lnk
+        else
+            # case: relative path
+            next="$(dirname $next)/$lnk"
+        fi
+        # print out current step
+        echo $next
+    done
+done
