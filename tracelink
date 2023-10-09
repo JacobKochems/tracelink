@@ -18,8 +18,11 @@ fi
 for symlink in "$@"
 do
     next="$symlink"
-    # print currently processed symlink to stderr
-    >&2 echo "---( Symlink: $next )---"
+    # if symlink candidate is actually a symlink..
+    if [ -L "$next" ]; then
+        # ..print currently processed symlink to stderr
+        >&2 echo "---( Symlink: $next )---"
+    fi
     # iterate from link to link until the chain ends at a regular file
     while lnk=$(readlink $next); do
         if [[ $lnk == /* ]]; then
