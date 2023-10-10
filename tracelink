@@ -15,14 +15,16 @@ if [[ $# == 0 ]]; then
     exit 1
 fi
 
+first_iter=true
+
 for symlink in "$@"
 do
     next="$symlink"
-    # if symlink candidate is actually a symlink..
-    if [ -L "$next" ]; then
-        # ..print currently processed symlink to stderr
-        >&2 echo "---( Symlink: $next )---"
+    if ! $first_iter; then
+        # separate traces by a new line
+        echo
     fi
+    echo "$(realpath -s $next)"
     # iterate from link to link until the chain ends at a regular file
     while lnk=$(readlink $next); do
         if [[ $lnk == /* ]]; then
@@ -33,6 +35,7 @@ do
             next="$(dirname $next)/$lnk"
         fi
         # print out current step
-        echo $next
+        echo "$(realpath -s $next)"
     done
+    first_iter=false
 done
