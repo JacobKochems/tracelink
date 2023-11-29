@@ -11,7 +11,7 @@
 #
 
 if [[ $# == 0 ]]; then
-    echo "Usage: $(basename $0) SYMLINK_1 [SYMLINK_2 ...]"
+    echo "Usage: $(basename "$0") SYMLINK_1 [SYMLINK_2 ...]"
     exit 1
 fi
 
@@ -24,18 +24,18 @@ do
         # separate traces by a new line
         echo
     fi
-    echo "$(realpath -s $next)"
+    realpath -s "$next"
     # iterate from link to link until the chain ends at a regular file
-    while lnk=$(readlink $next); do
+    while lnk=$(readlink "$next"); do
         if [[ $lnk == /* ]]; then
             # case: absolute path
             next=$lnk
         else
             # case: relative path
-            next="$(dirname $next)/$lnk"
+            next="$(dirname "$next")/$lnk"
         fi
         # print out current step
-        echo "$(realpath -s $next)"
+        realpath -s "$next"
     done
     first_iter=false
 done
