@@ -32,7 +32,7 @@ do
             next=$lnk
         else
             # case: relative path
-            next="$(dirname "$next")/$lnk"
+            next=$(dirname "$next")/"$lnk"
         fi
         # print out current step
         realpath -s "$next"
