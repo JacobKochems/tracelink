@@ -15,15 +15,9 @@ if [[ $# == 0 ]]; then
     exit 1
 fi
 
-first_iter=true
-
 for symlink in "$@"
 do
     next="$symlink"
-    if ! $first_iter; then
-        # separate traces by a new line
-        echo
-    fi
     realpath -s "$next"
     # iterate from link to link until the chain ends at a regular file
     while lnk=$(readlink "$next"); do
@@ -37,5 +31,5 @@ do
         # print out current step
         realpath -s "$next"
     done
-    first_iter=false
+    echo
 done
