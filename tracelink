@@ -17,18 +17,13 @@ fi
 
 for symlink in "$@"
 do
+    # proceed to current symlink and print it out
     next="$symlink"
     realpath -s "$next"
     # iterate from link to link until the chain ends at a regular file
     while lnk=$(readlink "$next"); do
-        if [[ $lnk == /* ]]; then
-            # case: absolute path
-            next=$lnk
-        else
-            # case: relative path
-            next=$(dirname "$next")/"$lnk"
-        fi
-        # print out current step
+        # proceede to next link in the chain and print it out
+        next=$lnk
         realpath -s "$next"
     done
     echo
