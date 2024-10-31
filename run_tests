@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+#------------------------------------------------------------------------------
+# run_tests
+# Copyright (C) 2024  Jacob Kochems <jacobkochems+git@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#------------------------------------------------------------------------------
+#
+# Run some basic tests
+#
+
+set -e -o pipefail
+
+#---( create test environment )------------------------------------------------
+mkdir --parents ./tests
+touch ./tests/actual-file
+
+# relative symlinks
+ln -sf actual-file ./tests/symlink-1
+ln -sf symlink-1 ./tests/symlink-2
+
+# absolute symlinks
+path="$(realpath --no-symlinks ./tests)"
+ln -sf "$path"/actual-file "$path"/symlink-a
+ln -sf "$path"/symlink-a "$path"/symlink-b
+
+#---( run tests )--------------------------------------------------------------
+./tracelink tests/symlink-{2,b}
