@@ -10,21 +10,39 @@
 # print out all intermediate symlinks.
 #
 
+this=$(basename "$0")
+
 if [[ $# == 0 ]]; then
     echo "Usage: $(basename "$0") SYMLINK_1 [SYMLINK_2 ...]"
     exit 1
 fi
 
+function panic {
+   echo "$this:" "$@"
+   exit 1
+}
+
+function get_full_path {
+    realpath --canonicalize-existing --no-symlinks "$@"
+}
+
 for symlink in "$@"
 do
-    # proceed to current symlink and print it out
+    # proceed to current symlink and print it out its canonical form
     next="$symlink"
-    realpath -s "$next"
+    get_full_path "$next" || panic "$next:" no such file
+
     # iterate from link to link until the chain ends at a regular file
     while lnk=$(readlink "$next"); do
-        # proceede to next link in the chain and print it out
-        next=$lnk
-        realpath -s "$next"
+        if [[ $lnk == /* ]]; then
+            # case: absolute path
+            next=$lnk
+        else
+            # case: relative path
+            next=$(dirname "$next")/"$lnk"
+        fi
+        # print out current step
+        get_full_path "$next" || panic "$next": no such file
     done
     echo
 done
