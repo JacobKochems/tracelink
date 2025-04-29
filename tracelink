@@ -28,7 +28,7 @@ function get_full_path {
 
 for symlink in "$@"
 do
-    # proceed to current symlink and print it out its canonical form
+    # proceed to current symlink and print out its canonical form
     next="$symlink"
     get_full_path "$next" || panic "$next:" no such file
 
